@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Scientific Discoveries — Study Flip Cards (All-in-One)</title>
+<style>
+  :root{
+    --bg: #0b0f14;
+    --panel: #0f161b;
+    --card: #12171c;
+    --accent: #2ea0ff;
+    --muted: #9aa7b2;
+    --text: #e6eef3;
+    --card-border: rgba(255,255,255,0.03);
+  }
+  *{box-sizing: border-box}
+  body{
+    margin:0;
+    font-family: "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
+    background: linear-gradient(180deg,#071018 0%, #0b0f14 100%);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-height:100vh;
+  }
+
+  header{
+    width:100%;
+    max-width:1200px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:14px;
+  }
+  h1{
+    margin:0;
+    font-size:1.25rem;
+    color:var(--accent);
+    letter-spacing:0.2px;
+  }
+  .subtitle{ color:var(--muted); font-size:0.92rem; }
+
+  /* Tabs */
+  .tabs{
+    width:100%;
+    max-width:1200px;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin:8px 0 18px;
+  }
+  .tab{
+    background:var(--panel);
+    color:var(--muted);
+    padding:10px 14px;
+    border-radius:10px;
+    cursor:pointer;
+    border:1px solid var(--card-border);
+    font-weight:600;
+    user-select:none;
+    transition:all .15s ease;
+    box-shadow:0 6px 18px rgba(2,6,12,0.35);
+  }
+  .tab:hover{ transform:translateY(-2px); }
+  .tab.active{
+    background: linear-gradient(180deg, rgba(46,160,255,0.12), rgba(46,160,255,0.06));
+    color:var(--accent);
+    border-color:rgba(46,160,255,0.18);
+    box-shadow:0 10px 30px rgba(46,160,255,0.06);
+  }
+
+  /* Containers */
+  .grid-wrap{
+    width:100%;
+    max-width:1200px;
+    background:transparent;
+    padding:6px 6px 36px;
+    border-radius:12px;
+  }
+  .cards{
+    display:none;
+    gap:14px;
+    padding:12px;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  }
+  .cards.active{ display:grid; }
+
+  /* Flip card */
+.flip {
+  perspective: 1000px;
+  width: 100%;
+  height: 170px;
+}
+
+.flip-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+}
+
+.flip:hover .flip-inner,
+.flip.flipped .flip-inner {
+  transform: rotateY(180deg);
+}
+
+/* Both faces */
+.face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 14px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: linear-gradient(180deg, var(--card), #0f1418 120%);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+}
+
+/* FRONT */
+.front {
+  transform: rotateY(0deg);
+  z-index: 2;
+  color: var(--accent);
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.2px;
+  font-size: 1rem;
+}
+
+/* BACK */
+.back {
+  transform: rotateY(180deg);
+  text-align: left;
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.34;
+}
+
+.flip:hover .back,
+.flip.flipped .back {
+  animation: fadeInBack 0.3s ease 0.2s forwards;
+}
+
+.back .title{ font-weight:700; color:var(--accent); margin-bottom:8px; }
+  .back .desc{ color:#d6e1e8; font-size:0.9rem; text-align: justify;}
+
+  .front .field{ font-size:0.78rem; color:var(--muted); font-weight:600; margin-top:8px; }
+
+@keyframes fadeInBack {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+  @media (max-width:880px){
+    .flip{ height:160px; }
+    .front{ font-size:0.98rem; }
+  }
+  @media (max-width:520px){
+    .flip{ height:150px; }
+    .cards{ gap:12px; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); }
+  }
+
+  .note{
+    margin-top:18px;
+    color:var(--muted);
+    font-size:0.88rem;
+    max-width:1200px;
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Scientific Discoveries — Study Flip Cards</h1>
+    <div class="subtitle">Dark study mode</div>
+  </div>
+  <div style="text-align:right;font-size:0.88rem;color:var(--muted)">
+    Tip: Hover or tap a card to see the contribution.
+  </div>
+</header>
+
+<div class="tabs" role="tablist" aria-label="Subjects">
+  <div class="tab active" data-target="physics">Physics</div>
+  <div class="tab" data-target="chemistry">Chemistry</div>
+  <div class="tab" data-target="biology">Biology</div>
+  <div class="tab" data-target="earth">Earth Science</div>
+  <div class="tab" data-target="astronomy">Astronomy</div>
+</div>
+
+<div class="grid-wrap">
+  <!-- PHYSICS -->
+  <div id="physics" class="cards active">
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">
+        Charles-Augustin de Coulomb
+        <div class="field">Physics</div>
+      </div>
+      <div class="face back">
+        <div class="title">Electrostatics</div>
+        <div class="desc">Formulated Coulomb's law describing electrostatic force between charges; developed instruments to measure electrostatic phenomena and frictional electricity.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Alessandro Volta<div class="field">Physics / Electricity</div></div>
+      <div class="face back">
+        <div class="title">Voltaic Cell</div>
+        <div class="desc">Invented the Voltaic pile (first chemical battery), enabling continuous electric current and founding electrochemistry and power sources.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Hans Christian Ørsted<div class="field">Physics</div></div>
+      <div class="face back">
+        <div class="title">Electromagnetism</div>
+        <div class="desc">Discovered that electric currents create magnetic fields (experimental link between electricity and magnetism), initiating the study of electromagnetism.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">André-Marie Ampère<div class="field">Physics</div></div>
+      <div class="face back">
+        <div class="title">Ampère's Law</div>
+        <div class="desc">Formulated laws describing magnetic effects of electric currents; foundational work for electrodynamics (Ampère's law, units named after him).</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Paul Erman<div class="field">Physics / Geomagnetism</div></div>
+      <div class="face back">
+        <div class="title">Earth's Magnetism</div>
+        <div class="desc">Performed early measurements of Earth's magnetic field and contributed to geomagnetic observations and instrumentation.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Michael Faraday<div class="field">Physics</div></div>
+      <div class="face back">
+        <div class="title">Electromagnetic Induction</div>
+        <div class="desc">Demonstrated that changing magnetic fields induce electric currents; discovered electromagnetic induction, foundations for generators and transformers.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">James Clerk Maxwell<div class="field">Physics</div></div>
+      <div class="face back">
+        <div class="title">Maxwell's Equations</div>
+        <div class="desc">Unified electricity and magnetism into electromagnetic theory; predicted electromagnetic waves and linked light to electromagnetism.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Heinrich Hertz<div class="field">Physics</div></div>
+      <div class="face back">
+        <div class="title">Radio Waves</div>
+        <div class="desc">Experimentally produced and detected electromagnetic waves, confirming Maxwell's predictions and enabling radio communication.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Wilhelm Röntgen<div class="field">Physics</div></div>
+      <div class="face back">
+        <div class="title">X-rays</div>
+        <div class="desc">Discovered X-rays (1895), which revolutionized imaging and diagnostic medicine and opened new research in electromagnetic phenomena.</div>
+      </div>
+    </div></div>
+
+    <!-- later-generation physics contributors -->
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Albert Einstein<div class="field">Physics</div></div>
+      <div class="face back">
+        <div class="title">Relativity</div>
+        <div class="desc">Developed special and general relativity, transforming concepts of space, time, mass and energy (E=mc²) and gravity as spacetime curvature.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Ernest Rutherford<div class="field">Physics</div></div>
+      <div class="face back">
+        <div class="title">Nuclear Model & Proton</div>
+        <div class="desc">Discovered the nucleus structure via scattering experiments; identified the proton and proposed the nuclear model of the atom.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Wolfgang Pauli<div class="field">Physics</div></div>
+      <div class="face back">
+        <div class="title">Pauli Exclusion Principle</div>
+        <div class="desc">Formulated the exclusion principle that governs electron arrangements and the structure of the periodic table and matter stability.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Werner Heisenberg<div class="field">Physics</div></div>
+      <div class="face back">
+        <div class="title">Quantum Mechanics</div>
+        <div class="desc">Developed matrix mechanics and the uncertainty principle, central to the formulation of quantum mechanics.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Erwin Schrödinger<div class="field">Physics</div></div>
+      <div class="face back">
+        <div class="title">Wave Mechanics</div>
+        <div class="desc">Developed wave mechanics (Schrödinger equation), an equivalent formulation of quantum theory focusing on wavefunctions.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Paul Dirac<div class="field">Physics</div></div>
+      <div class="face back">
+        <div class="title">Relativistic Quantum Mechanics</div>
+        <div class="desc">Formulated the Dirac equation combining quantum mechanics and special relativity; predicted antimatter (positron).</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">James Chadwick<div class="field">Physics</div></div>
+      <div class="face back">
+        <div class="title">Neutron</div>
+        <div class="desc">Discovered the neutron (1932), crucial for understanding atomic nuclei and enabling nuclear fission research.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Otto Hahn<div class="field">Physics / Chemistry</div></div>
+      <div class="face back">
+        <div class="title">Nuclear Fission</div>
+        <div class="desc">Discovered nuclear fission experimentally; work enabled development of nuclear energy and weapons (shared context with chemistry discoveries).</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">John Bardeen<div class="field">Physics</div></div>
+      <div class="face back">
+        <div class="title">Superconductivity & Transistor</div>
+        <div class="desc">Explained superconductivity (BCS theory co-laureate) and co-invented the transistor — major advances in electronics and condensed matter physics.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Murray Gell-Mann<div class="field">Physics</div></div>
+      <div class="face back">
+        <div class="title">Quark Model</div>
+        <div class="desc">Developed the classification scheme for hadrons and proposed quarks as fundamental constituents of matter.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Karl Alexander Müller & Johannes Georg Bednorz<div class="field">Physics</div></div>
+      <div class="face back">
+        <div class="title">High-Temperature Superconductors</div>
+        <div class="desc">Discovered superconductivity at higher temperatures in ceramic materials, opening a new research field in superconductors.</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- CHEMISTRY -->
+  <div id="chemistry" class="cards">
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Daniel Gabriel Fahrenheit<div class="field">Chemistry / Instrumentation</div></div>
+      <div class="face back">
+        <div class="title">Mercury Thermometer</div>
+        <div class="desc">Invented a reliable mercury thermometer and developed the Fahrenheit temperature scale used in some countries today.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Benjamin Franklin<div class="field">Chemistry / Electricity</div></div>
+      <div class="face back">
+        <div class="title">Electric Charge Conventions</div>
+        <div class="desc">Distinguished positive and negative electric charges and conducted influential experiments on electricity (kite experiment contextually known).</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Antoine-Laurent de Lavoisier<div class="field">Chemistry</div></div>
+      <div class="face back">
+        <div class="title">Modern Chemistry</div>
+        <div class="desc">Established law of conservation of mass, named oxygen, and performed combustion experiments, transforming chemistry into a quantitative science.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Henry Cavendish<div class="field">Chemistry / Physics</div></div>
+      <div class="face back">
+        <div class="title">Hydrogen & Water</div>
+        <div class="desc">Identified 'inflammable air' (hydrogen) and showed that water is produced by combustion of hydrogen with oxygen.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Mikhail Tsvet<div class="field">Chemistry / Techniques</div></div>
+      <div class="face back">
+        <div class="title">Paper Chromatography</div>
+        <div class="desc">Developed adsorption chromatography techniques (paper chromatography) for separating plant pigments and mixtures.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Jaroslav Heyrovský<div class="field">Chemistry / Electrochemistry</div></div>
+      <div class="face back">
+        <div class="title">Polarography</div>
+        <div class="desc">Invented polarography — an electrochemical method for analyzing substances — and received the Nobel Prize for it.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Phoebus Levene<div class="field">Chemistry / Biochemistry</div></div>
+      <div class="face back">
+        <div class="title">DNA Components</div>
+        <div class="desc">Discovered deoxyribose sugar and clarified nucleotide structure, contributing to understanding DNA chemistry.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Neil Bartlett<div class="field">Chemistry</div></div>
+      <div class="face back">
+        <div class="title">Noble Gas Compounds</div>
+        <div class="desc">Showed that noble gases can form compounds (first xenon compound), overturning the idea that inert gases were entirely unreactive.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Hugo de Vries<div class="field">Biology / Genetics</div></div>
+      <div class="face back">
+        <div class="title">Mutation Theory</div>
+        <div class="desc">Proposed the concept of mutations as a source of variation (alongside Mendelian rediscoverers); contributed to early genetics.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Alan Guth<div class="field">Cosmology (listed under Chemistry)</div></div>
+      <div class="face back">
+        <div class="title">Inflationary Universe</div>
+        <div class="desc">Proposed the inflationary universe theory explaining a rapid expansion phase in the early universe (included as you listed it).</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- BIOLOGY -->
+  <div id="biology" class="cards">
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Robert Hooke<div class="field">Biology</div></div>
+      <div class="face back">
+        <div class="title">Cell Discovery</div>
+        <div class="desc">Observed cork structures and coined the term “cell” when viewing plant tissue under a microscope.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Anton van Leeuwenhoek<div class="field">Biology / Microbiology</div></div>
+      <div class="face back">
+        <div class="title">Microorganisms</div>
+        <div class="desc">Built powerful single-lens microscopes and was the first to observe bacteria and other microscopic life (microbiology foundations).</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Carolus Linnaeus<div class="field">Biology / Taxonomy</div></div>
+      <div class="face back">
+        <div class="title">Binomial Nomenclature</div>
+        <div class="desc">Developed the system of classifying species using two-part Latin names (genus + species) still used in taxonomy.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Mary Anning<div class="field">Paleontology / Biology</div></div>
+      <div class="face back">
+        <div class="title">Fossil Discoveries</div>
+        <div class="desc">Discovered important fossil specimens including Ichthyosaur fossils, contributing to early paleontology and extinction understanding.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Georges Cuvier<div class="field">Biology / Comparative Anatomy</div></div>
+      <div class="face back">
+        <div class="title">Comparative Anatomy</div>
+        <div class="desc">Established comparative anatomy and paleontology; argued for species extinction and studied fossil evidence scientifically.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Robert Brown<div class="field">Biology / Botany</div></div>
+      <div class="face back">
+        <div class="title">Cell Nucleus</div>
+        <div class="desc">Discovered the cell nucleus; contributed to cell biology and plant cell observations.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Hugo de Vries, Carl Correns & Erich Tschermak<div class="field">Biology / Genetics</div></div>
+      <div class="face back">
+        <div class="title">Rediscovery of Mendel</div>
+        <div class="desc">Independent rediscovery and confirmation of Mendel's laws of inheritance around 1900, forming modern genetics foundations.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Dmitry Ivanovsky & Martinus Beijerinck<div class="field">Biology / Virology</div></div>
+      <div class="face back">
+        <div class="title">Discovery of Viruses</div>
+        <div class="desc">Ivanovsky's tobacco mosaic studies and Beijerinck's work led to concept of viruses as infectious agents smaller than bacteria.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Martin Cline<div class="field">Biology / Genetic Engineering</div></div>
+      <div class="face back">
+        <div class="title">Gene Transfer</div>
+        <div class="desc">Performed early experiments transferring functional genes into mice; involved in early gene therapy research (historical context).</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Allan Wilson & Russell Higuchi<div class="field">Biology / Molecular Genetics</div></div>
+      <div class="face back">
+        <div class="title">Ancient DNA & Cloning Insights</div>
+        <div class="desc">Pioneering work in molecular evolution and ancient DNA; contributed to cloning and molecular techniques linked to extinct species studies.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Ian Wilmut<div class="field">Biology / Cloning</div></div>
+      <div class="face back">
+        <div class="title">Dolly the Sheep</div>
+        <div class="desc">Led team that cloned Dolly via somatic cell nuclear transfer — first mammal cloned from an adult somatic cell (1996).</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Rudolf Jaenisch<div class="field">Biology / Genetics</div></div>
+      <div class="face back">
+        <div class="title">Genetic Modification in Mammals</div>
+        <div class="desc">Introduced foreign DNA into mouse embryos, pioneering transgenic animal models for genetic research and disease study.</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- EARTH SCIENCE -->
+  <div id="earth" class="cards">
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Leon Philippe Teisserenc de Bort<div class="field">Earth Science / Meteorology</div></div>
+      <div class="face back">
+        <div class="title">Stratosphere</div>
+        <div class="desc">Discovered and characterized the stratosphere — distinct atmospheric layer above the troposphere with stable temperature profile.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Andrija Mohorovičić<div class="field">Geophysics</div></div>
+      <div class="face back">
+        <div class="title">Moho Discontinuity</div>
+        <div class="desc">Discovered the boundary between Earth's crust and mantle (the "Moho") using seismic wave observations.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Alfred Wegener<div class="field">Geology</div></div>
+      <div class="face back">
+        <div class="title">Continental Drift</div>
+        <div class="desc">Proposed continents move over geological time (continental drift), later supported by plate tectonics evidence.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Motonori Matuyama<div class="field">Geophysics</div></div>
+      <div class="face back">
+        <div class="title">Geomagnetic Reversals</div>
+        <div class="desc">Presented evidence for periodic reversals of Earth's magnetic field (polarity reversals) important for paleomagnetism.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Charles Francis Richter<div class="field">Seismology</div></div>
+      <div class="face back">
+        <div class="title">Richter Scale</div>
+        <div class="desc">Developed the Richter magnitude scale to quantify earthquake sizes (historically influential in seismology).</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Harry Hess<div class="field">Geology / Oceanography</div></div>
+      <div class="face back">
+        <div class="title">Seafloor Spreading</div>
+        <div class="desc">Proposed seafloor spreading, providing mechanism for continental drift and plate tectonics through mid-ocean ridges.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Walter Alvarez<div class="field">Earth Science / Geology</div></div>
+      <div class="face back">
+        <div class="title">Impact Extinction Hypothesis</div>
+        <div class="desc">Proposed that a large impact (asteroid/comet) caused the Cretaceous–Paleogene mass extinction, supported by global iridium layer evidence.</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- ASTRONOMY -->
+  <div id="astronomy" class="cards">
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Edwin Hubble<div class="field">Astronomy</div></div>
+      <div class="face back">
+        <div class="title">Galaxies & Expansion</div>
+        <div class="desc">Demonstrated other galaxies exist beyond the Milky Way and observed redshift-distance relation indicating the expanding universe.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Clyde Tombaugh<div class="field">Astronomy</div></div>
+      <div class="face back">
+        <div class="title">Pluto Discovery</div>
+        <div class="desc">Discovered Pluto (1930) while surveying the outer solar system for trans-Neptunian objects.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Karl Guthe Jansky<div class="field">Radio Astronomy</div></div>
+      <div class="face back">
+        <div class="title">Radio Waves from Space</div>
+        <div class="desc">Detected radio emissions from the Milky Way, founding radio astronomy and opening a new window to the cosmos.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Georges Lemaître<div class="field">Cosmology</div></div>
+      <div class="face back">
+        <div class="title">Primeval Atom / Big Bang</div>
+        <div class="desc">Published early theoretical model of an expanding universe (primeval atom), a precursor to Big Bang cosmology.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">George Gamow, Ralph Alpher & Robert Herman<div class="field">Cosmology</div></div>
+      <div class="face back">
+        <div class="title">Big Bang Predictions</div>
+        <div class="desc">Developed nucleosynthesis models and predicted residual cosmic microwave background radiation as part of Big Bang theory refinements.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Jocelyn Bell Burnell<div class="field">Astronomy</div></div>
+      <div class="face back">
+        <div class="title">Pulsars</div>
+        <div class="desc">Discovered pulsars—regular radio pulses from rotating neutron stars—transforming understanding of compact stellar remnants.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Neil Armstrong & Buzz Aldrin<div class="field">Astronomy / Spaceflight</div></div>
+      <div class="face back">
+        <div class="title">Moon Landing</div>
+        <div class="desc">First humans to walk on the Moon (Apollo 11, 1969), marking a milestone in human space exploration and lunar science.</div>
+      </div>
+    </div></div>
+
+    <div class="flip"><div class="flip-inner">
+      <div class="face front">Fritz Zwicky<div class="field">Astronomy / Astrophysics</div></div>
+      <div class="face back">
+        <div class="title">Dark Matter Evidence</div>
+        <div class="desc">Proposed (1930s) that unseen mass (dark matter) is needed to explain galaxy dynamics; early detection of possible dark matter effects.</div>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      btn.classList.add('active');
+      const target = btn.dataset.target;
+      document.querySelectorAll('.cards').forEach(c=>c.classList.remove('active'));
+      const el = document.getElementById(target);
+      if(el) el.classList.add('active');
+      window.scrollTo({ top: 80, behavior: 'smooth' });
+    });
+  });
+
+  document.querySelectorAll('.flip').forEach(f=>{
+    f.addEventListener('click', (e)=>{
+      const inner = f.querySelector('.flip-inner');
+      if(inner.style.transform && inner.style.transform.includes('rotateY(180deg)')){
+        inner.style.transform = '';
+      } else {
+        inner.style.transform = 'rotateY(180deg)';
+      }
+      setTimeout(()=>{ inner.style.transform = inner.style.transform; }, 0);
+    });
+  });
+</script>
+
+</body>
+</html>
